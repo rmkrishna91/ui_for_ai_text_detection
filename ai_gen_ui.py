@@ -27,7 +27,17 @@ from nltk import pos_tag
 
 import streamlit as st
 
-nlp = spacy.load("en_core_web_sm")
+# Load the model from the local path
+model_path = os.path.join(os.getcwd(), "en_core_web_sm")
+try:
+    nlp = spacy.load(model_path)
+    print("SpaCy model loaded successfully!")
+except Exception as e:
+    print(f"Failed to load SpaCy model: {e}")
+
+
+
+# nlp = spacy.load("en_core_web_sm")
 st.title('AI Generated Detection')
 text_input = st.text_area('Enter text',height=300)
 
