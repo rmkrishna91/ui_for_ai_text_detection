@@ -16,7 +16,7 @@ from nltk.stem import PorterStemmer
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk.corpus import stopwords, wordnet
 from nltk import pos_tag
-import streamlit as st
+
 # Ensure necessary NLTK datasets are downloaded
 # nltk.download('punkt')
 # nltk.download('averaged_perceptron_tagger')
@@ -25,20 +25,9 @@ import streamlit as st
 
 # Load SpaCy model
 
+import streamlit as st
 
-import spacy
-import os
-
-# Ensure the model is installed
-try:
-    nlp = spacy.load("en_core_web_sm")
-except OSError:
-    print("Downloading 'en_core_web_sm' model...")
-    os.system("python -m spacy download en_core_web_sm")
-    nlp = spacy.load("en_core_web_sm")
-
-
-
+nlp = spacy.load("en_core_web_sm")
 st.title('AI Generated Detection')
 text_input = st.text_area('Enter text',height=300)
 
