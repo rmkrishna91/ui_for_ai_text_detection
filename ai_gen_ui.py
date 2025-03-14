@@ -18,10 +18,10 @@ from nltk.corpus import stopwords, wordnet
 from nltk import pos_tag
 
 # Ensure necessary NLTK datasets are downloaded
-# nltk.download('punkt')
-# nltk.download('averaged_perceptron_tagger')
-# nltk.download('averaged_perceptron_tagger_eng')
-# nltk.download('punkt_tab')  # Download missing 'punkt_tab' package
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('averaged_perceptron_tagger_eng')
+nltk.download('punkt_tab')  # Download missing 'punkt_tab' package
 
 # Load SpaCy model
 
