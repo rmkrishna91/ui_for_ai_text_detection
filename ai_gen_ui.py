@@ -27,17 +27,34 @@ nltk.download('punkt_tab')  # Download missing 'punkt_tab' package
 
 import streamlit as st
 
-# Load the model from the local path
-model_path = os.path.join(os.getcwd(), "en_core_web_sm")
+# # Load the model from the local path
+# model_path = os.path.join(os.getcwd(), "en_core_web_sm")
+# try:
+#     nlp = spacy.load(model_path)
+#     print("SpaCy model loaded successfully!")
+# except Exception as e:
+#     print(f"Failed to load SpaCy model: {e}")
+
+
+
+# nlp = spacy.load(model_path)
+
+import spacy
+import os
+
+# Ensure the model is installed
 try:
-    nlp = spacy.load(model_path)
-    print("SpaCy model loaded successfully!")
-except Exception as e:
-    print(f"Failed to load SpaCy model: {e}")
+    spacy.load("en_core_web_sm")
+except OSError:
+    print("Downloading SpaCy 'en_core_web_sm' model...")
+    os.system("python -m spacy download en_core_web_sm")
+
+# Load the model
+nlp = spacy.load("en_core_web_sm")
 
 
 
-nlp = spacy.load(model_path)
+
 st.title('AI Generated Detection')
 text_input = st.text_area('Enter text',height=300)
 
