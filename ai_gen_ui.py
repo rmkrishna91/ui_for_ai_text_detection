@@ -230,16 +230,16 @@ input_size = 795
 model = ClassificationModel(input_size).to(device)
 
 # Load trained model weights
-model.load_state_dict(torch.load("user_interface/classification_model1.pth", map_location=device))
+model.load_state_dict(torch.load("classification_model1.pth", map_location=device))
 model.eval()
 
 # Load trained scaler (saved during training)
 scaler = StandardScaler()
-scaler.mean_ = np.load("user_interface/scaler_mean.npy")  # Load mean
-scaler.scale_ = np.load("user_interface/scaler_scale.npy")  # Load scale
+scaler.mean_ = np.load("scaler_mean.npy")  # Load mean
+scaler.scale_ = np.load("scaler_scale.npy")  # Load scale
 
 # Load Sentence Transformer model
-sentence_model = SentenceTransformer("user_interface/all-mpnet-base-v2").to(device)
+sentence_model = SentenceTransformer("all-mpnet-base-v2").to(device)
 
 # List of required numerical features (must match training order)
 FEATURE_COLUMNS = [
