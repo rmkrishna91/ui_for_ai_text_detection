@@ -37,20 +37,20 @@ import streamlit as st
 
 
 
-# nlp = spacy.load(model_path)
+nlp = spacy.load("en_core_web_sm/en_core_web_sm-3.5.0")
 
-import spacy
-import os
+# import spacy
+# import os
 
-# Ensure the model is installed
-try:
-    spacy.load("en_core_web_sm")
-except OSError:
-    print("Downloading SpaCy 'en_core_web_sm' model...")
-    os.system("python -m spacy download en_core_web_sm")
+# # Ensure the model is installed
+# try:
+#     spacy.load("en_core_web_sm")
+# except OSError:
+#     print("Downloading SpaCy 'en_core_web_sm' model...")
+#     os.system("python -m spacy download en_core_web_sm")
 
-# Load the model
-nlp = spacy.load("en_core_web_sm")
+# # Load the model
+# nlp = spacy.load("en_core_web_sm")
 
 
 
