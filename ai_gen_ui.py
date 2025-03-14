@@ -37,7 +37,7 @@ except Exception as e:
 
 
 
-# nlp = spacy.load("en_core_web_sm")
+nlp = spacy.load(model_path)
 st.title('AI Generated Detection')
 text_input = st.text_area('Enter text',height=300)
 
