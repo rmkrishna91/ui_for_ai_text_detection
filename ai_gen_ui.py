@@ -272,6 +272,9 @@ scaler.mean_ = np.load("scaler_mean.npy")  # Load mean
 scaler.scale_ = np.load("scaler_scale.npy")  # Load scale
 
 # Load Sentence Transformer model
+
+# Load Sentence Transformer model
+sentence_model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
 # numerical_features = torch.tensor(scaler.transform(numerical_df), dtype=torch.float32).to(device)
 
 # List of required numerical features (must match training order)
