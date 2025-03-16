@@ -56,7 +56,13 @@ nlp = spacy.load("en_core_web_sm/en_core_web_sm-3.5.0")
 
 
 st.title('AI Generated Detection')
-text_input = st.text_area('Enter text',height=300)
+
+
+if "text_input" not in st.session_state:
+    st.session_state.text_input = ""
+
+
+text_input = st.text_area("Enter text:", value=st.session_state.text_input, height=350)
 
 #creating linguistic features dataframe from given text input
 def calculate(text):
@@ -266,7 +272,7 @@ scaler.mean_ = np.load("scaler_mean.npy")  # Load mean
 scaler.scale_ = np.load("scaler_scale.npy")  # Load scale
 
 # Load Sentence Transformer model
-sentence_model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
+numerical_features = torch.tensor(scaler.transform(numerical_df), dtype=torch.float32).to(device)
 
 # List of required numerical features (must match training order)
 FEATURE_COLUMNS = [
@@ -277,70 +283,67 @@ FEATURE_COLUMNS = [
     "SPACE", "CCONJ"
 ]
 
-if "text_input_key" not in st.session_state:
-    st.session_state.text_input_key = ""
 
 
-if text_input:
-    # Function for inference
+
+def predict(text_list, numerical_df):
+    """
+    text_list: List of texts (sentences/documents)
+    numerical_df: DataFrame with 27 numerical features (same order as training)
+    Returns:
+        predictions: Binary classification labels (0 or 1)
+        probabilities: Predicted probability scores
+    """
+    # Ensure numerical_df has the correct feature order
+    numerical_df = numerical_df[FEATURE_COLUMNS]
+
+    # Generate text embeddings
+    text_embeddings = sentence_model.encode(text_list, convert_to_tensor=True).to(device)
+    # numerical_features = numerical_features.reshape(text_embeddings.shape[0], -1) # Reshape
+
+
+    # Standardize numerical features
+    numerical_features = torch.tensor(scaler.transform(numerical_df), dtype=torch.float32).to(device)
+    # numerical_features = numerical_features.reshape(text_embeddings.shape[0], -1)
+    numerical_features = numerical_features.reshape(len(text_list), -1)
+
+
+    # Concatenate text embeddings (768) and numerical features (27) -> 795-dimensional input
+    X_combined = torch.cat((text_embeddings, numerical_features), dim=1)
+
+    # Make predictions
+    with torch.no_grad():
+        outputs = model(X_combined)
+        probabilities = torch.sigmoid(outputs).cpu().numpy().flatten()
+
+    # Convert probabilities to binary predictions
+    predictions = (probabilities > 0.5).astype(int)
+
+    return predictions, probabilities
+
     
-    def clear_text():
-        st.session_state.text_input_key = ""
-    col1, col2 = st.columns(2)
-    with col1:
-        # if st.button("Submit"):
-            # st.write(f"You entered: {text_input}")
 
-        if st.button("Submit"):
-
-            def predict(text_list, numerical_df):
-                """
-                text_list: List of texts (sentences/documents)
-                numerical_df: DataFrame with 27 numerical features (same order as training)
-                Returns:
-                    predictions: Binary classification labels (0 or 1)
-                    probabilities: Predicted probability scores
-                """
-                # Ensure numerical_df has the correct feature order
-                numerical_df = numerical_df[FEATURE_COLUMNS]
-
-                # Generate text embeddings
-                text_embeddings = sentence_model.encode(text_list, convert_to_tensor=True).to(device)
-                # numerical_features = numerical_features.reshape(text_embeddings.shape[0], -1) # Reshape
+if "output_prob" not in st.session_state:
+    st.session_state.output_prob = 0.0
 
 
-                # Standardize numerical features
-                numerical_features = torch.tensor(scaler.transform(numerical_df), dtype=torch.float32).to(device)
-                # numerical_features = numerical_features.reshape(text_embeddings.shape[0], -1)
-                numerical_features = numerical_features.reshape(len(text_list), -1)
+col1, col2 = st.columns([0.3, 2.5])
 
+with col1:
+    if st.button("Submit"):
+        st.session_state.text_input = text_input  # Save text
+        text_list = [text_input]  # Convert input to list 
 
-                # Concatenate text embeddings (768) and numerical features (27) -> 795-dimensional input
-                X_combined = torch.cat((text_embeddings, numerical_features), dim=1)
+        # Get predictions
+        predictions, probs = predict(text_list, final_df)
+        st.session_state.output_prob = float(probs[0])  # Store probability
 
-                # Make predictions
-                with torch.no_grad():
-                    outputs = model(X_combined)
-                    probabilities = torch.sigmoid(outputs).cpu().numpy().flatten()
+with col2:
+    if st.button("Clear"):
+        st.session_state.text_input = ""
+        st.session_state.output_prob = 0.0
 
-                # Convert probabilities to binary predictions
-                predictions = (probabilities > 0.5).astype(int)
-
-                return predictions, probabilities
-
-            predictions, probs = predict([text_input], final_df)
-            # Simulated probability (replace with model output)
-            # Example: Probability that text is AI-generated
-
-
-            # st.write(f"**Probability of AI-generated text: {float(probs):.2%}**")
-
-            st.write(f"**Probability of AI-generated text: {float(probs[0]):.2%}**")  # Extract first element if it's an array
-
-            st.progress(float(probs[0]))  # Show probability visually
-    
-    with col2:
-        st.button("Clear", on_click=clear_text)
-
-else:
-    st.write('Please enter input')
+# Display results
+if st.session_state.output_prob > 0:
+    st.write(f"**Probability of AI-generated text: {st.session_state.output_prob:.2%}**")
+    st.progress(st.session_state.output_prob)  # Show progress bar
