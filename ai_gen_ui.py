@@ -330,7 +330,7 @@ if "output_prob" not in st.session_state:
     st.session_state.output_prob = 0.0
 
 
-col1, col2 = st.columns([0.3, 2.5])
+col1, col2 = st.columns([0.3, 2.2])
 
 with col1:
     if st.button("Submit"):
