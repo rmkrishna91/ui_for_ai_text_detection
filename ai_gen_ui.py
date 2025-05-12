@@ -55,7 +55,7 @@ nlp = spacy.load("en_core_web_sm/en_core_web_sm-3.5.0")
 
 
 
-st.title('AI Generated Detection')
+st.title('AI Generated Text Detection')
 
 
 if "text_input" not in st.session_state:
